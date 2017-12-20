@@ -81,9 +81,9 @@
                     </div>
                 </div>
             </form>
-        <div class="king-notice2 king-notice-success notice-borders">
+        <div class="king-notice2 king-notice-success notice-borders" style="display: none;">
     <i class="fa fa-check-circle"></i>
-    <div class="notice-text">
+    <div class="notice-text" >
         <p>执行成功，请检查结果</p>
     </div>
 </div>
@@ -112,7 +112,7 @@
                         <td style="width: 15%;">${server['ModuleID']}</td>
                         <td style="width: 15%;">${server['ModuleName']}</td>
                         <td>
-                            <button class="king-btn king-primary exec_job_btn"> <i class="glyphicon glyphicon-ok"></i> </button>
+                            <button class="king-btn king-primary exec_job_btn" id={${server['InnerIP']}} onclick="executetask()"> <i class="glyphicon glyphicon-ok"></i> </button>
                         </td>
                     </tr>
                     %endfor
@@ -122,9 +122,12 @@
             <!-- 设置面板End -->
         </div>
     </div>
-    <script>$(".exec_job_btn").click(function(){
-  $.post(http://dev.paasce-z.o.qcloud.com:8000/executetask/)
-  });
+    <script>
+        function executetask() {
+
+    $.post('dev.paasce-z.o.qcloud.com:8000/executetask', {"targetip": attr('')})
+    $(".king-notice-success").show();
+}
     </script>
     <script>
         $(function(){
