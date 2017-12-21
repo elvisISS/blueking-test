@@ -59,3 +59,7 @@ def get_time():
     execute_task()
     now = datetime.datetime.now()
     logger.error(u"celery 周期任务调用成功，当前时间：{}".format(now))
+
+@task
+def hello_world():
+    print 'hello world'

@@ -9,13 +9,34 @@ an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express o
 See the License for the specific language governing permissions and limitations under the License.
 """
 
-# import from apps here
+from django.contrib import admin
+from home_application.models import Book, Publisher, Author
 
 
-# import from lib
-# ===============================================================================
-# from django.contrib import admin
-# from apps.__.models import aaaa
-#
-# admin.site.register(aaaa)
-# ===============================================================================
+class BookAdmin(admin.ModelAdmin):
+    list_display = ['name', 'price', 'update_at', 'publisher', 'authors_list']
+    list_filter = ['name']
+    search_fields = ['name']
+
+    def publisher(self, obj):
+        return obj.publisher
+
+    def authors_list(self, obj):
+        return obj.authors.values_list('name', flat=True)
+
+
+class PublisherAdmin(admin.ModelAdmin):
+    list_display = ['name', 'address']
+    list_filter = ['name']
+    search_fields = ['name']
+
+
+class AuthorAdmin(admin.ModelAdmin):
+    list_display = ['name', 'email']
+    list_filter = ['name']
+    search_fields = ['name']
+
+
+admin.site.register(Book, BookAdmin)
+admin.site.register(Author, AuthorAdmin)
+admin.site.register(Publisher, PublisherAdmin)

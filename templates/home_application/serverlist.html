@@ -112,7 +112,7 @@
                         <td style="width: 15%;">${server['ModuleID']}</td>
                         <td style="width: 15%;">${server['ModuleName']}</td>
                         <td>
-                            <button class="king-btn king-primary exec_job_btn" id={${server['InnerIP']}} onclick="executetask()"> <i class="glyphicon glyphicon-ok"></i> </button>
+                            <button class="king-btn king-primary exec_job_btn" id={${server['InnerIP']}} onclick="executetask(this)"> <i class="glyphicon glyphicon-ok"></i> </button>
                         </td>
                     </tr>
                     %endfor
@@ -123,9 +123,9 @@
         </div>
     </div>
     <script>
-        function executetask() {
-
-    $.post('dev.paasce-z.o.qcloud.com:8000/executetask', {"targetip": attr('')})
+        function executetask(btn) {
+    console.log(btn)
+    $.post('../executetask/', {"targetip": btn.id})
     $(".king-notice-success").show();
 }
     </script>

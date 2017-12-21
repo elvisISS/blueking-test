@@ -12,6 +12,8 @@ See the License for the specific language governing permissions and limitations 
 from common.mymako import render_mako_context, render_json
 from blueking.component.shortcuts import get_client_by_request
 from blueking.component.shortcuts import get_client_by_user
+from django.views.decorators.csrf import csrf_exempt
+
 import json
 
 def home(request):
@@ -86,12 +88,14 @@ def showserverlist(request):
     return render_mako_context(request, '/home_application/serverlist.html', {"serverlist": serverlist})
     # return render_mako_context(request, '/home_application/serverlist.html', getserverlist(request))
 
-def getalltasks(request):
-    app_id = request.GET.get('app_id', '3')
-    client = get_client_by_request(request)
+def getalltasks():
+    # app_id = request.GET.get('app_id', '3')
+    # client = get_client_by_request(request)
+    app_id = 3
+    client = get_client_by_user('admin')
+    # result = client.job.get_tasks({'app_id': app_id})
+    result = client.job.get_task({'app_id': app_id})
 
-    result = client.job.get_tasks({'app_id': app_id})
-    serverlist = result['data']
     return result
 
 def gettaskstepid(request):
@@ -107,6 +111,7 @@ def gettaskstepid(request):
         steps
     return render_json(steps)
 
+@csrf_exempt
 def executetask(request):
     task_id = request.GET.get('task_id', '2')
     app_id = request.GET.get('app_id', '3')
@@ -118,3 +123,4 @@ def executetask(request):
     client = get_client_by_request(request)
     result = client.job.execute_task({"app_id": app_id, "task_id": task_id, "steps": steps})
     return render_json(result)
+
