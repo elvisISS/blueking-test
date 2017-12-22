@@ -17,8 +17,9 @@ urlpatterns = patterns(
     (r'^dev-guide/$', 'dev_guide'),
     (r'^contactus/$', 'contactus'),
     (r'^test/$', 'getalltasks'),
-    (r'^query/$', 'query'),
+    # (r'^query/$', 'query'),
     (r'^serverlist/$', 'showserverlist'),
     (r'^executetask/$', 'executetask'),
     (r'^history/$', 'history'),
+    (r'^tasks/$', 'historylist'),
 )

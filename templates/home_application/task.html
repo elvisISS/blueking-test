@@ -33,8 +33,10 @@
 </head>
 
 <body class="bg-white" data-bg-color="bg-white">
+
     <div class="king-page-box">
         <div class="king-layout1-header">
+
             <nav class="">
                 <div style="overflow:hidden; z-index: inherit;" class="navbar king-horizontal-nav1  f14">
                     <div class="navbar-container">
@@ -63,7 +65,7 @@
         <div class="king-layout2-main mt15" style="width:960px;">
             <div class="panel king-panel1 mb0  ">
                 <div class="panel-heading king-panel-head1 king-panel-top1">
-                    <h3 class="panel-title">选择作业</h3>
+                    <h3 class="panel-title">面板标题</h3>
                 </div>
                 <div class="panel-body">
                     <div class="container-fluid mb0 ">
@@ -71,22 +73,12 @@
                             <div class="col-md-4">
                                 <form class="form-vertical p15">
                                     <div class="form-group ">
-                                        <label>业务：</label>
-                                        <select class="form-control" disabled>
-                                            <option value="选择项1">蓝鲸</option>
-
-                                        </select>
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="col-md-4">
-                                <form class="form-vertical p15">
-                                    <div class="form-group ">
-                                        <label>用户：</label>
+                                        <label>参数：</label>
                                         <select class="form-control">
-                                            %for user in userlist:
-                                            <option value=${user['username']}>${user['username']}</option>
-                                            %endfor
+                                            <option value="选择项1">选择项1</option>
+                                            <option value="选择项2">选择项2</option>
+                                            <option value="选择项3">选择项3</option>
+                                            <option value="选择项4">选择项4</option>
                                         </select>
                                     </div>
                                 </form>
@@ -94,9 +86,25 @@
                             <div class="col-md-4">
                                 <form class="form-vertical p15">
                                     <div class="form-group ">
-                                        <label>类型：</label>
-                                        <select class="form-control" disabled>
-                                            <option value="选择项1">查看CPU</option>
+                                        <label>参数：</label>
+                                        <select class="form-control">
+                                            <option value="选择项1">选择项1</option>
+                                            <option value="选择项2">选择项2</option>
+                                            <option value="选择项3">选择项3</option>
+                                            <option value="选择项4">选择项4</option>
+                                        </select>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="col-md-4">
+                                <form class="form-vertical p15">
+                                    <div class="form-group ">
+                                        <label>参数：</label>
+                                        <select class="form-control">
+                                            <option value="选择项1">选择项1</option>
+                                            <option value="选择项2">选择项2</option>
+                                            <option value="选择项3">选择项3</option>
+                                            <option value="选择项4">选择项4</option>
                                         </select>
                                     </div>
                                 </form>
@@ -106,7 +114,7 @@
                     <form class="form-horizontal">
                         <div class="form-group clearfix">
                             <div class="col-sm-9 col-sm-offset-3">
-                                <button type="button"  class="king-btn mr10  king-success" onclick="location='../tasks'">提交</button>
+                                <button type="button" class="king-btn mr10  king-success">提交</button>
                                 <button type="button" class="king-btn king-default ">取消</button>
                             </div>
                         </div>
@@ -115,21 +123,22 @@
             </div>
             <div class="panel king-panel1 mb0  ">
                 <div class="panel-heading king-panel-head1 king-panel-top1">
-                    <h3 class="panel-title">作业结果</h3>
+                    <h3 class="panel-title">面板标题</h3>
                 </div>
                 <div class="panel-body">
                     <table class="table mb0 pr15 ranger-box2  ">
                         <thead>
                             <tr>
-                                <th style="width: 15%;">业务名称</th>
-                                <th style="width: 15%;">用户</th>
-                                <th style="width: 15%;">操作时间</th>
-                                <th style="width: 15%;">任务类型</th>
-                                <th style="width: 15%;">机器IP</th>
+                                <th style="width: 70px;">#</th>
+                                <th style="width: 15%;">名称</th>
+                                <th style="width: 15%;">位置</th>
+                                <th style="width: 15%;">日期</th>
+                                <th style="width: 15%;">类型</th>
                                 <th>操作</th>
                             </tr>
                         </thead>
                         <tbody>
+                        <p>${data}<p>
                             <tr>
                                 <td style="width: 70px;">1</td>
                                 <td style="width: 15%;">Ravi Kumar</td>
@@ -204,7 +213,16 @@
                             </tr>
                         </tbody>
                     </table>
-
+                    <template id="header_tpl_15138395642212">
+                        <tr>
+                            <th style="width: 70px;">#index#</th>
+                            <th style="width: 15%;">#name#</th>
+                            <th style="width: 15%;">#position#</th>
+                            <th style="width: 15%;">#date#</th>
+                            <th style="width: 15%;">#type#</th>
+                            <th>操作</th>
+                        </tr>
+                    </template>
                     <template id="tpl_15138395642212">
                         <tr>
                             <td style="width: 70px;">#index#</td>

@@ -13,6 +13,10 @@ from common.mymako import render_mako_context, render_json
 from blueking.component.shortcuts import get_client_by_request
 from blueking.component.shortcuts import get_client_by_user
 from django.views.decorators.csrf import csrf_exempt
+from models import *
+from django.http import JsonResponse
+from datetime import datetime
+from django.core import serializers
 
 import json
 
@@ -98,6 +102,22 @@ def getalltasks():
 
     return result
 
+
+def get_instance_detail(instance_id):
+    # app_id = request.GET.get('app_id', '3')
+    app_id = 3
+    # client = get_client_by_request(request)
+
+    client = get_client_by_user('admin')
+    result = client.job.get_task_ip_log({'app_id': app_id, 'task_instance_id': instance_id})
+
+
+    return result
+
+
+
+
+
 def gettaskstepid(request):
     task_id = request.GET.get('task_id', '2')
     app_id = request.GET.get('app_id', '3')
@@ -111,16 +131,122 @@ def gettaskstepid(request):
         steps
     return render_json(steps)
 
+def save_history(request, result1):
+    end_time = result1['endTime']
+    start_time = result1['startTime']
+    ip = result1['ip']
+    log_content = result1['logContent']
+    name = result1['resultTypeText']
+    try:
+        Taskhistory.objects.create(end_time=end_time, start_time=start_time, ip=ip, result=log_content,
+                                   name=name, username=get_current_username(request))
+    except Exception as ex:
+        print str(ex)
+    data = {'result': True}
+    return JsonResponse(data)
+
 @csrf_exempt
 def executetask(request):
     task_id = request.GET.get('task_id', '2')
     app_id = request.GET.get('app_id', '3')
     target_ip = request.GET.get('targetIP', '1:10.0.1.109')
+    # task_id = 2
+    # app_id = 3
+    # target_ip = '1:10.0.1.109'
+
+
     steps = [{
         "ipList": target_ip,
         "stepId": 2
     }]
     client = get_client_by_request(request)
     result = client.job.execute_task({"app_id": app_id, "task_id": task_id, "steps": steps})
+
+    result_new = get_instance_detail(result['data']['taskInstanceId'])
+    # print type(result_new['data'][0]['stepAnalyseResult'][0]['ipLogContent'][0]['endTime'])
+    try:
+        content = result_new['data'][0]['stepAnalyseResult'][0]['ipLogContent'][0]
+        end_time = datetime.now()
+        start_time = datetime.now()
+        ip = content['ip']
+        # log_content = result_new['data'][0]['resultTypeText']
+        name = result_new['data'][0]['stepInstanceName']
+        # instance_id = result_new['data'][0]['stepInstanceId']
+        # types = result_new['data'][0]['stepAnalyseResult'][0]['resultType'][0]
+
+        try:
+            Taskhistory.objects.create(end_time=end_time, start_time=start_time, ip=ip,
+                                       name=name, username=get_current_username(request))
+        except Exception as ex:
+            print str(ex)
+            print get_client_by_user(request)
+        data = {'result': True}
+        return JsonResponse(data)
+    except Exception as ex:
+        print str(ex)
+        print '1'
+        print result_new['data'][0]['stepAnalyseResult']
+        print type(content['endTime'])
+        print content['endTime']
     return render_json(result)
+
+def history(request):
+    """
+    任务历史
+    """
+    return render_mako_context(request, '/home_application/history.html', dictionary={"userlist": get_all_user(request)})
+
+def get_all_user(request):
+    # app_id = request.GET.get('app_id', '3')
+    client = get_client_by_request(request)
+    # client = get_client_by_user('admin')
+    result = client.bk_login.get_all_user()
+
+    return result['data']
+
+def get_current_username(request):
+    # app_id = request.GET.get('app_id', '3')
+    client = get_client_by_request(request)
+    # client = get_client_by_user('admin')
+    result = client.bk_login.get_user()
+
+    return result['data']['username']
+
+
+def save_history(request, result1):
+    content = result1['data'][0]['stepAnalyseResult'][0]['ipLogContent']
+    end_time = content['endTime']
+    start_time = content['startTime']
+    ip = content['ip']
+    log_content = content['logContent']
+    name = content['resultTypeText']
+    try:
+        Taskhistory.objects.create(end_time=end_time, start_time=start_time, ip=ip, result=log_content,
+                                   name=name, username=get_current_username(request))
+    except Exception as ex:
+        print str(ex)
+        print get_client_by_user(request)
+    data = {'result': True}
+    return JsonResponse(data)
+
+def historylist(request):
+
+    try:
+        tasks = Taskhistory.objects.filter(username='admin')
+        data = serializers.serialize("json", Taskhistory.objects.all())
+        print type(data)
+        spliter = '=' * 40
+
+        print '%s%s%s\n' % (spliter, 'Task', spliter)
+        for item in Taskhistory.objects.values_list():
+            print item
+            re = re + str(item)
+
+
+        # print tasks
+    except Exception as ex:
+        print str(ex)
+
+    return render_mako_context(request, '/home_application/task.html', dictionary={"data": data})
+
 

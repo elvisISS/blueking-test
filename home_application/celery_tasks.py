@@ -18,6 +18,9 @@ import datetime
 from celery import task
 from celery.schedules import crontab
 from celery.task import periodic_task
+from blueking.component.shortcuts import get_client_by_user
+from common.mymako import render_json
+from views import get_instance_detail
 
 from common.log import logger
 
@@ -63,3 +66,57 @@ def get_time():
 @task
 def hello_world():
     print 'hello world'
+
+
+def get_tasks_detail(instance_id):
+    # app_id = request.GET.get('app_id', '3')
+    app_id = 3
+    # client = get_client_by_request(request)
+
+    client = get_client_by_user('admin')
+    result = client.job.get_task_result({'app_id': app_id, 'task_instance_id': instance_id})
+
+
+    return result
+
+@periodic_task(run_every=crontab(minute='*/5', hour='*', day_of_week="*"))
+def checkcpu():
+    task_id = '2'
+    app_id = '3'
+    target_ip = '1:10.0.1.109'
+
+
+    steps = [{
+        "ipList": target_ip,
+        "stepId": 2
+    }]
+    client = get_client_by_user('admin')
+    result = client.job.execute_task({"app_id": app_id, "task_id": task_id, "steps": steps})
+
+    result_new = get_tasks_detail(result['data']['taskInstanceId'])
+    # print type(result_new['data'][0]['stepAnalyseResult'][0]['ipLogContent'][0]['endTime'])
+    # try:
+    #     content = result_new['data'][0]['stepAnalyseResult'][0]['ipLogContent'][0]
+    #     end_time = datetime.now()
+    #     start_time = datetime.now()
+    #     ip = content['ip']
+    #     # log_content = result_new['data'][0]['resultTypeText']
+    #     name = result_new['data'][0]['stepInstanceName']
+    #     # instance_id = result_new['data'][0]['stepInstanceId']
+    #     # types = result_new['data'][0]['stepAnalyseResult'][0]['resultType'][0]
+    #
+    #     try:
+    #         Taskhistory.objects.create(end_time=end_time, start_time=start_time, ip=ip,
+    #                                    name=name, username=get_current_username(request))
+    #     except Exception as ex:
+    #         print str(ex)
+    #         print get_client_by_user(request)
+    #     data = {'result': True}
+    #     return JsonResponse(data)
+    # except Exception as ex:
+    #     print str(ex)
+    #     print '1'
+    #     print result_new['data'][0]['stepAnalyseResult']
+    #     print type(content['endTime'])
+    #     print content['endTime']
+    return render_json(result_new)

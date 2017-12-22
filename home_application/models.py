@@ -12,6 +12,33 @@ See the License for the specific language governing permissions and limitations 
 from django.db import models
 
 
+
+class User(models.Model):
+    """用户"""
+    username = models.CharField(u"用户名", max_length=30)
+    qq = models.CharField(u"QQ", max_length=30)
+    phone = models.CharField(u"QQ", max_length=30)
+
+    def __unicode__(self):
+        return self.name
+
+class Taskhistory(models.Model):
+    """任务结果"""
+
+    name = models.CharField(u"业务名称", max_length=64)
+    username = models.CharField(u"用户名",default="", max_length=64)
+    instance_id = models.CharField(u"任务ID", max_length=30)
+    result = models.CharField(u"结果", max_length=255)
+    start_time = models.DateTimeField(u"开始时间")
+    end_time = models.DateTimeField(u"完成时间")
+    ip = models.CharField(u"IP", max_length=30)
+    type = models.CharField(u"任务类型", max_length=30)
+
+    def __unicode__(self):
+        return self.name
+
+
+
 class Publisher(models.Model):
     """出版社"""
 
