@@ -22,4 +22,5 @@ urlpatterns = patterns(
     (r'^executetask/$', 'executetask'),
     (r'^history/$', 'history'),
     (r'^tasks/$', 'historylist'),
+    (r'^dashboard/$', 'cpudashboard'),
 )

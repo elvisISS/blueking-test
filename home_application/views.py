@@ -250,3 +250,22 @@ def historylist(request):
     return render_mako_context(request, '/home_application/task.html', dictionary={"data": data})
 
 
+def cpudashboard(request):
+
+    try:
+        # tasks = Taskhistory.objects.filter(username='admin')
+        data = serializers.serialize("json", Cpulog.objects.all())
+        print type(data)
+        spliter = '=' * 40
+
+        print '%s%s%s\n' % (spliter, 'Task', spliter)
+        for item in Taskhistory.objects.values_list():
+            print item
+            re = re + str(item)
+
+
+        # print tasks
+    except Exception as ex:
+        print str(ex)
+
+    return render_mako_context(request, '/home_application/cpudashboard.html', dictionary={"data": data})
