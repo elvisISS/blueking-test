@@ -22,6 +22,14 @@ class User(models.Model):
     def __unicode__(self):
         return self.name
 
+class Cpulog(models.Model):
+    """用户"""
+    log = models.CharField(u"用户名", max_length=500)
+
+
+    def __unicode__(self):
+        return self.name
+
 class Taskhistory(models.Model):
     """任务结果"""
 

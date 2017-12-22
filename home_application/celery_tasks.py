@@ -21,6 +21,8 @@ from celery.task import periodic_task
 from blueking.component.shortcuts import get_client_by_user
 from common.mymako import render_json
 from views import get_instance_detail
+import time
+from models import Cpulog
 
 from common.log import logger
 
@@ -75,9 +77,27 @@ def get_tasks_detail(instance_id):
 
     client = get_client_by_user('admin')
     result = client.job.get_task_result({'app_id': app_id, 'task_instance_id': instance_id})
+    stepslist = result['data']['blocks'][0]['stepInstances'][0]['status']
 
+    return stepslist
 
-    return result
+def check_tasks_status(instance_id):
+    # app_id = request.GET.get('app_id', '3')
+    app_id = 3
+    # client = get_client_by_request(request)
+
+    client = get_client_by_user('admin')
+    result = client.job.get_task_result({'app_id': app_id, 'task_instance_id': instance_id})
+    status = result['data']['blocks'][0]['stepInstances'][0]['status']
+
+    if status == 3:
+        re = 'Finished'
+    elif status in (1,2):
+        re = 'Processing'
+    else:
+        re = 'Error'
+
+    return re
 
 @periodic_task(run_every=crontab(minute='*/5', hour='*', day_of_week="*"))
 def checkcpu():
@@ -93,7 +113,19 @@ def checkcpu():
     client = get_client_by_user('admin')
     result = client.job.execute_task({"app_id": app_id, "task_id": task_id, "steps": steps})
 
-    result_new = get_tasks_detail(result['data']['taskInstanceId'])
+
+
+    execute_status = check_tasks_status(result['data']['taskInstanceId'])
+
+    while execute_status not in ('Complete'):
+        time.sleep(5)
+
+    result_new = get_instance_detail(result['data']['taskInstanceId'])
+
+    log_content = result_new['data'][0]['stepAnalyseResult'][0]['ipLogContent'][0]['logContent']
+
+    Cpulog.object.create(log=log_content)
+
     # print type(result_new['data'][0]['stepAnalyseResult'][0]['ipLogContent'][0]['endTime'])
     # try:
     #     content = result_new['data'][0]['stepAnalyseResult'][0]['ipLogContent'][0]
