@@ -10,6 +10,7 @@ See the License for the specific language governing permissions and limitations 
 """
 
 from django.db import models
+from datetime import datetime
 
 
 
@@ -24,8 +25,8 @@ class User(models.Model):
 
 class Cpulog(models.Model):
     """用户"""
-    log = models.CharField(u"用户名", max_length=500)
-
+    log = models.CharField(u"日志", max_length=500)
+    time = models.DateTimeField(u"开始时间", default=datetime.now(), null=True, blank=True)
 
     def __unicode__(self):
         return self.name

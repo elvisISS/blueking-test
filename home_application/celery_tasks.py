@@ -13,7 +13,7 @@ celery 任务示例
 本地启动celery命令: python  manage.py  celery  worker  --settings=settings
 周期性任务还需要启动celery调度命令：python  manage.py  celerybeat --settings=settings
 """
-import datetime
+from datetime import datetime
 
 from celery import task
 from celery.schedules import crontab
@@ -22,7 +22,7 @@ from blueking.component.shortcuts import get_client_by_user
 from common.mymako import render_json
 from views import get_instance_detail
 import time
-from models import Cpulog
+from models import *
 
 from common.log import logger
 
@@ -113,18 +113,19 @@ def checkcpu():
     client = get_client_by_user('admin')
     result = client.job.execute_task({"app_id": app_id, "task_id": task_id, "steps": steps})
 
+    execute_status = 'Waiting'
 
 
-    execute_status = check_tasks_status(result['data']['taskInstanceId'])
-
-    while execute_status not in ('Complete'):
+    while (execute_status != 'Finished'):
         time.sleep(5)
+        execute_status = check_tasks_status(result['data']['taskInstanceId'])
 
     result_new = get_instance_detail(result['data']['taskInstanceId'])
 
     log_content = result_new['data'][0]['stepAnalyseResult'][0]['ipLogContent'][0]['logContent']
+    print log_content
+    Cpulog.objects.create(log=log_content, time=datetime.now())
 
-    Cpulog.object.create(log=log_content)
 
     # print type(result_new['data'][0]['stepAnalyseResult'][0]['ipLogContent'][0]['endTime'])
     # try:
@@ -151,4 +152,5 @@ def checkcpu():
     #     print result_new['data'][0]['stepAnalyseResult']
     #     print type(content['endTime'])
     #     print content['endTime']
-    return render_json(result_new)
+
+    return execute_status
