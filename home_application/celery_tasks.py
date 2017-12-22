@@ -154,3 +154,38 @@ def checkcpu():
     #     print content['endTime']
 
     return execute_status
+
+@periodic_task(run_every=crontab(minute='*/5', hour='*', day_of_week="*"))
+def check_cpu_util():
+    task_id = '2'
+    app_id = '3'
+    target_ip = '1:10.0.1.109'
+
+
+    steps = [{
+        "ipList": target_ip,
+        "stepId": 2
+    }]
+    client = get_client_by_user('admin')
+    result = client.job.execute_task({"app_id": app_id, "task_id": task_id, "steps": steps})
+
+    execute_status = 'Waiting'
+
+
+    while (execute_status != 'Finished'):
+        time.sleep(5)
+        execute_status = check_tasks_status(result['data']['taskInstanceId'])
+
+    result_new = get_instance_detail(result['data']['taskInstanceId'])
+
+    log_content = result_new['data'][0]['stepAnalyseResult'][0]['ipLogContent'][0]['logContent']
+    # ip = result_new['data'][0]['stepAnalyseResult'][0]['ipLogContent'][0]['ip']
+    # print log_content
+    CpuUtil.objects.create(log=log_content, time=datetime.now(),
+                           ip=result_new['data'][0]['stepAnalyseResult'][0]['ipLogContent'][0]['ip'],
+                           userspace=float(log_content.split()[26]), systemspace=float(log_content.split()[28]),
+                           idle=float(log_content.split()[35]))
+
+
+
+    return result_new

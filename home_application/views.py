@@ -255,6 +255,7 @@ def cpudashboard(request):
     try:
         # tasks = Taskhistory.objects.filter(username='admin')
         data = serializers.serialize("json", Cpulog.objects.all())
+        data1 = serializers.serialize("json", CpuUtil.objects.all())
         print type(data)
         spliter = '=' * 40
 
@@ -268,4 +269,4 @@ def cpudashboard(request):
     except Exception as ex:
         print str(ex)
 
-    return render_mako_context(request, '/home_application/cpudashboard.html', dictionary={"data": data})
+    return render_mako_context(request, '/home_application/cpudashboard.html', dictionary={"data": data, "data1": data1})

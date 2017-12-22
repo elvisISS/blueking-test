@@ -31,6 +31,18 @@ class Cpulog(models.Model):
     def __unicode__(self):
         return self.name
 
+class CpuUtil(models.Model):
+    """用户"""
+    log = models.CharField(u"日志", max_length=500)
+    time = models.DateTimeField(u"开始时间", default=datetime.now(), null=True, blank=True)
+    ip = models.CharField(u"IP", max_length=30)
+    userspace = models.FloatField(u"UserCPU", default=0)
+    systemspace = models.FloatField(u"SystemCPU", default=0)
+    idle = models.FloatField(u"IdleCPU", default=100)
+
+    def __unicode__(self):
+        return self.name
+
 class Taskhistory(models.Model):
     """任务结果"""
 
